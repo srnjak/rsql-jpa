@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka &lt;jakub@jirutka.cz&gt;.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 /**
  * Simple implementation of the {@link Mapper}.
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka &lt;jakub@jirutka.cz&gt;
  */
 public class SimpleMapper implements Mapper {
 
@@ -41,14 +41,14 @@ public class SimpleMapper implements Mapper {
 
 
     /**
-     * Construct new <tt>SimpleMapper</tt> with zero initial capacity of the
+     * Construct new {@link SimpleMapper} with zero initial capacity of the
      * entities map.
      */
     public SimpleMapper() {
     	this(0);
     }
     /**
-     * Construct new <tt>SimpleMapper</tt> with the specified initial capacity
+     * Construct new {@link SimpleMapper} with the specified initial capacity
      * of the entities map.
      *
      * @param initialCapacity initial capacity of entities map
@@ -104,7 +104,7 @@ public class SimpleMapper implements Mapper {
     /**
      * Set the mapping of selectors to property names per entity class.
      *
-     * @param Mapping {entity class -> {selector -> property}}
+     * @param mapping {entity class -> {selector -> property}}
      */
     public void setMapping(Map<Class<?>, Map<String, String>> mapping) {
         this.mapping = mapping;

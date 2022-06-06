@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka &lt;jakub@jirutka.cz&gt;.
  * Copyright 2015 Antonio Rabelo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * of them match, it tries to invoke valueOf(String s) method via reflection on
  * the type's class.
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka &lt;jakub@jirutka.cz&gt;
  * @author AntonioRabelo
  */
 public class DefaultArgumentParser implements ArgumentParser {

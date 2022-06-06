@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka &lt;jakub@jirutka.cz&gt;.
  * Copyright 2015 Antonio Rabelo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,7 @@ import java.util.Date;
 
 /**
  *
- * @author Jakub Jirutka <jakub@jirutka.cz>
+ * @author Jakub Jirutka &lt;jakub@jirutka.cz&gt;
  * @author Antonio Rabelo
  */
 @Entity

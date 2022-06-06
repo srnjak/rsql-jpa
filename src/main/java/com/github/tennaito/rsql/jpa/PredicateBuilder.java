@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 Jakub Jirutka <jakub@jirutka.cz>.
+ * Copyright 2013 Jakub Jirutka &lt;jakub@jirutka.cz&gt;.
  * Copyright 2015 Antonio Rabelo.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  *
  * @author AntonioRabelo
  *
- * Based from CriterionBuilders of rsql-hibernate created by Jakub Jirutka <jakub@jirutka.cz>.
+ * Based from CriterionBuilders of rsql-hibernate created by Jakub Jirutka &lt;jakub@jirutka.cz&gt;.
  *
  * @since 2015-02-05
  */
