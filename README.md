@@ -200,11 +200,13 @@ Now some real examples of RSQL queries.
 
 ## Maven
 
+[![latest release](https://img.shields.io/maven-central/v/com.srnjak/rsql-jpa.svg?label=latest%20release)](https://central.sonatype.com/artifact/com.srnjak/rsql-jpa)
+
 ```xml
 <dependency>
     <groupId>com.srnjak</groupId>
     <artifactId>rsql-jpa</artifactId>
-    <version>3.0.0</version>
+    <version><!-- see the badge above --></version>
 </dependency>
 ```
 
