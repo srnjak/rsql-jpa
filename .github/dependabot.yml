@@ -1,0 +1,23 @@
+# Dependabot reads this file from the repository's default branch only, which
+# is why it lives on master rather than on develop.
+#
+# target-branch sends the pull requests to develop. This is not a preference:
+# the release job in build.yml runs on any push to master whose commit message
+# does not start with '[release] ', so a dependency bump merged into master
+# would cut a release of whatever happened to be there.
+version: 2
+
+updates:
+  - package-ecosystem: maven
+    directory: "/"
+    target-branch: develop
+    schedule:
+      interval: weekly
+
+  # Keeps the action versions in the workflows current. These were the last
+  # thing that had to be bumped by hand.
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: develop
+    schedule:
+      interval: weekly
