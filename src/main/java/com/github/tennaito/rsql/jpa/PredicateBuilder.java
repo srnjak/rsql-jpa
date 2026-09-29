@@ -240,7 +240,7 @@ public final class PredicateBuilder {
      *
      * @param propertyPath  Property path that we want to compare.
      * @param operator      Comparison operator.
-     * @param arguments     Arguments (1 for binary comparisons, n for multi-value comparisons [in, not in (out)])
+     * @param arguments     Arguments (none for zero-arity comparisons [is null, not null], 1 for binary comparisons, n for multi-value comparisons [in, not in (out)])
      * @param manager       JPA EntityManager.
      * @return              Predicate a predicate representation.
      */
@@ -331,6 +331,8 @@ public final class PredicateBuilder {
                 }
 	    		case IN : return createIn(propertyPath, arguments, manager);
 	    		case NOT_IN : return createNotIn(propertyPath, arguments, manager);
+	    		case IS_NULL : return createIsNull(propertyPath, manager);
+	    		case NOT_NULL : return createIsNotNull(propertyPath, manager);
     		}
     	}
         throw new IllegalArgumentException("Unknown operator: " + operator);
@@ -542,6 +544,14 @@ public final class PredicateBuilder {
      * @return              Predicate a predicate representation.
      */
     private static Predicate createIn(Expression<?> propertyPath, List<?> arguments, EntityManager manager) {
+    	if (arguments.isEmpty()) {
+    		// Nothing can be a member of the empty set, so this matches no row.
+    		// Spelled out as an always-false predicate rather than left to the
+    		// provider: an empty "in" gets simplified in ways that do not
+    		// necessarily negate correctly, which used to make an empty "out"
+    		// match no row either.
+    		return manager.getCriteriaBuilder().disjunction();
+    	}
     	return propertyPath.in(arguments);
     }
 
@@ -555,6 +565,7 @@ public final class PredicateBuilder {
      */
     private static Predicate createNotIn(Expression<?> propertyPath, List<?> arguments, EntityManager manager) {
     	CriteriaBuilder builder = manager.getCriteriaBuilder();
+    	// An empty set excludes nothing, so this matches every row.
     	return builder.not(createIn(propertyPath,arguments, manager));
     }
 
