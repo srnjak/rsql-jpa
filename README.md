@@ -157,9 +157,13 @@ criteria.where(predicate);
 
 ## RSQL syntax
 
-RSQL syntax is described on [RSQL-parser’s project page](https://github.com/nstdio/rsql-parser). There’s only one addition described below.
+RSQL syntax is described on [RSQL-parser’s project page](https://github.com/nstdio/rsql-parser). There are a few additions described below.
 
 For comparing string arguments with Equals or Not Equals, you can use wildcards `*` and `_`. If the argument begins or ends with an asterisk character `*` (converted to '%' defined in JSR 317, section 4.6.10), it acts as a wild card, matching any characters preceding or following (respectively) that position. If the argument also contains an underscore character `_` (JSR 317, section 4.6.10), it acts as a wildcard, matching exactly one character. It corresponds to the percentage, respectively underscore wildcard of the LIKE condition in SQL.
+
+The `=null=` and `=notnull=` operators take no argument and translate to the SQL `IS NULL` and `IS NOT NULL` conditions. The older `==null` and `!=null` forms still do the same thing, but they rely on the argument parser reading the text `null` as an absent value, which means they cannot match the literal string `"null"`; the dedicated operators have no such ambiguity.
+
+An empty argument list follows set semantics: `id=in=()` matches no row, because nothing is a member of the empty set, while `id=out=()` matches every row, because the empty set excludes nothing.
 
 ## Examples of RSQL
 
