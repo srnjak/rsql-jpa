@@ -2,6 +2,8 @@
 
 [![Build](https://github.com/srnjak/rsql-jpa/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/srnjak/rsql-jpa/actions/workflows/build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.srnjak/rsql-jpa.svg)](https://central.sonatype.com/artifact/com.srnjak/rsql-jpa)
+[![Javadoc](https://javadoc.io/badge2/com.srnjak/rsql-jpa/javadoc.svg)](https://javadoc.io/doc/com.srnjak/rsql-jpa)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 RESTful Service Query Language (RSQL) is a language and a library designed for searching entries in RESTful services.
 
@@ -202,6 +204,10 @@ Now some real examples of RSQL queries.
     - /courses?query=department.name==*engineering - is guaranteed by the department that name ends to "engineering"
     - /courses?query=name==*services*&orderBy=name&maxResults=50 - name contains "services", order by name and limit output to maximum 50 results
 
+## Requirements
+
+Java 11 or newer, and a Jakarta Persistence 3.1 provider. The library depends only on `jakarta.persistence-api` and expects the application to supply the provider itself; the test suite runs against EclipseLink.
+
 ## Maven
 
 [![latest release](https://img.shields.io/maven-central/v/com.srnjak/rsql-jpa.svg?label=latest%20release)](https://central.sonatype.com/artifact/com.srnjak/rsql-jpa)
@@ -230,6 +236,14 @@ This project is licensed under [MIT license](http://opensource.org/licenses/MIT)
 
 ## Change log
 
+- (4.0.0) Moved the classes from com.github.tennaito.rsql to com.srnjak.rsql;
+          Added support for the `=null=` and `=notnull=` operators;
+          An empty `=out=()` now matches every row instead of none;
+          Switched to the maintained io.github.nstdio:rsql-parser.
+- (3.0.1) Moved the build and publishing to GitHub Actions and the Central Portal;
+          Updated test dependencies and build plugins.
+- (3.0.0) Migrated from the javax to the jakarta namespace;
+          Released under the com.srnjak coordinates.
 - (2.0.2) Minor changes;
 - (2.0.1) Added Embeddable property Path;
 		  Resolved thread safed of Data formatting;
