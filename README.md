@@ -214,6 +214,16 @@ Now some real examples of RSQL queries.
 </dependency>
 ```
 
+### Migrating from 3.x
+
+As of 4.0.0 the classes live under `com.srnjak.rsql`, the namespace this fork controls, instead of the upstream `com.github.tennaito.rsql`. Nothing else about the API changed, so the migration is a find and replace across your imports:
+
+```bash
+grep -rl 'com.github.tennaito.rsql' src | xargs sed -i 's/com\.github\.tennaito\.rsql/com.srnjak.rsql/g'
+```
+
+The rename exists because both this artifact and the upstream `com.github.tennaito:rsql-jpa` used to ship the same fully qualified class names. Since the two have diverged in behaviour, having both on one classpath meant the JVM picked an implementation by classpath order. Under distinct package names they coexist without ambiguity.
+
 ## License
 
 This project is licensed under [MIT license](http://opensource.org/licenses/MIT).
