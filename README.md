@@ -9,7 +9,7 @@ RESTful Service Query Language (RSQL) is a language and a library designed for s
 
 This library provides converter of [RSQL expression](https://github.com/nstdio/rsql-parser) to Jakarta Persistence [Criteria Query](https://jakarta.ee/learn/docs/jakartaee-tutorial/current/persist/persistence-criteria/persistence-criteria.html) (object representation of JPQL), which is translated to SQL query. RSQL was originally created for [KOSapi](https://kosapi.feld.cvut.cz) - RESTful web services for IS at the Czech Technical University in Prague. 
 
-It targets [Jakarta Persistence](https://jakarta.ee/specifications/persistence/3.1/) directly: you hand it an `EntityManager` and get back a `CriteriaQuery` or a `Predicate` to execute yourself. There is no Spring dependency. The library works inside a Spring application, but it does not produce Spring Data `Specification` objects — if that is what you are after, [rsql-jpa-specification](https://github.com/perplexhub/rsql-jpa-specification) is a separate project that does.
+It targets [Jakarta Persistence](https://jakarta.ee/specifications/persistence/3.1/) directly: you hand it an `EntityManager` and get back a `CriteriaQuery` or a `Predicate` to execute yourself. Beyond the RSQL parser and the Jakarta Persistence API, it has no dependencies.
 
 Feel free to contribute!
 
