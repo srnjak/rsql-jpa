@@ -334,6 +334,76 @@ public class JpaVisitorTest extends AbstractVisitorTest<Course> {
     }
 
     @Test
+    public void testInSelectionWithoutArguments() throws Exception {
+    	Node rootNode = new RSQLParser().parse("id=in=()");
+    	RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
+    	CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
+
+    	List<Course> courses = entityManager.createQuery(query).getResultList();
+    	assertEquals(0, courses.size());
+    }
+
+    @Test
+    public void testOutSelectionWithoutArguments() throws Exception {
+    	// An empty "not in" matches nothing here, even though in SQL terms it
+    	// should match everything. Pinned as-is, to be revisited together with
+    	// the =null= / =notnull= operators.
+    	Node rootNode = new RSQLParser().parse("id=out=()");
+    	RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
+    	CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
+
+    	List<Course> courses = entityManager.createQuery(query).getResultList();
+    	assertEquals(0, courses.size());
+    }
+
+    @Test
+    public void testIsNullOperatorIsUnsupported() {
+    	// =null= is part of the parser's default operator set, but
+    	// ComparisonOperatorProxy has no mapping for it yet.
+    	Node rootNode = new RSQLParser().parse("name=null=");
+    	RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
+    	try {
+    		rootNode.accept(visitor, entityManager);
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals("Unknown operator: =null=", e.getMessage());
+    	}
+    }
+
+    @Test
+    public void testNotNullOperatorIsUnsupported() {
+    	Node rootNode = new RSQLParser().parse("name=notnull=");
+    	RSQLVisitor<CriteriaQuery<Course>, EntityManager> visitor = new JpaCriteriaQueryVisitor<Course>();
+    	try {
+    		rootNode.accept(visitor, entityManager);
+    		fail();
+    	} catch (IllegalArgumentException e) {
+    		assertEquals("Unknown operator: =notnull=", e.getMessage());
+    	}
+    }
+
+    @Test
+    public void testIsNullOperatorThroughPredicateBuilderStrategy() throws Exception {
+    	// Until =null= is supported out of the box, it can be handled through
+    	// the PredicateBuilderStrategy extension point.
+    	Node rootNode = new RSQLParser().parse("name=null=");
+
+    	JpaCriteriaQueryVisitor<Course> visitor = new JpaCriteriaQueryVisitor<Course>();
+    	visitor.getBuilderTools().setPredicateBuilder(new PredicateBuilderStrategy() {
+			public <T> Predicate createPredicate(Node node, From root, Class<T> entity,
+					EntityManager manager, BuilderTools tools)
+					throws IllegalArgumentException {
+				ComparisonNode comp = (ComparisonNode) node;
+				return manager.getCriteriaBuilder().isNull(root.get(comp.getSelector()));
+			}
+		});
+
+    	CriteriaQuery<Course> query = rootNode.accept(visitor, entityManager);
+    	List<Course> courses = entityManager.createQuery(query).getResultList();
+    	assertEquals(0, courses.size());
+    }
+
+    @Test
     public void testSetEntity() {
         Node rootNode = new RSQLParser().parse("id==1");
         RSQLVisitor<CriteriaQuery<?>, EntityManager> visitor = new JpaCriteriaQueryVisitor();
