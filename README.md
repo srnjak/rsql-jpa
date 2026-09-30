@@ -2,10 +2,14 @@
 
 [![Build](https://github.com/srnjak/rsql-jpa/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/srnjak/rsql-jpa/actions/workflows/build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.srnjak/rsql-jpa.svg)](https://central.sonatype.com/artifact/com.srnjak/rsql-jpa)
+[![Javadoc](https://javadoc.io/badge2/com.srnjak/rsql-jpa/javadoc.svg)](https://javadoc.io/doc/com.srnjak/rsql-jpa)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 RESTful Service Query Language (RSQL) is a language and a library designed for searching entries in RESTful services.
 
-This library provides converter of [RSQL expression](https://github.com/jirutka/rsql-parser) to JPA [Criteria Query](http://docs.oracle.com/javaee/6/tutorial/doc/gjitv.html) (object representation of JPQL), which is translated to SQL query. RSQL was originally created for [KOSapi](https://kosapi.feld.cvut.cz) - RESTful web services for IS at the Czech Technical University in Prague. 
+This library provides converter of [RSQL expression](https://github.com/nstdio/rsql-parser) to Jakarta Persistence [Criteria Query](https://jakarta.ee/learn/docs/jakartaee-tutorial/current/persist/persistence-criteria/persistence-criteria.html) (object representation of JPQL), which is translated to SQL query. RSQL was originally created for [KOSapi](https://kosapi.feld.cvut.cz) - RESTful web services for IS at the Czech Technical University in Prague. 
+
+It targets [Jakarta Persistence](https://jakarta.ee/specifications/persistence/3.1/) directly: you hand it an `EntityManager` and get back a `CriteriaQuery` or a `Predicate` to execute yourself. Beyond the RSQL parser and the Jakarta Persistence API, it has no dependencies.
 
 Feel free to contribute!
 
@@ -157,9 +161,13 @@ criteria.where(predicate);
 
 ## RSQL syntax
 
-RSQL syntax is described on [RSQL-parser’s project page](https://github.com/jirutka/rsql-parser). There’s only one addition described below.
+RSQL syntax is described on [RSQL-parser’s project page](https://github.com/nstdio/rsql-parser). There are a few additions described below.
 
 For comparing string arguments with Equals or Not Equals, you can use wildcards `*` and `_`. If the argument begins or ends with an asterisk character `*` (converted to '%' defined in JSR 317, section 4.6.10), it acts as a wild card, matching any characters preceding or following (respectively) that position. If the argument also contains an underscore character `_` (JSR 317, section 4.6.10), it acts as a wildcard, matching exactly one character. It corresponds to the percentage, respectively underscore wildcard of the LIKE condition in SQL.
+
+The `=null=` and `=notnull=` operators take no argument and translate to the SQL `IS NULL` and `IS NOT NULL` conditions. The older `==null` and `!=null` forms still do the same thing, but they rely on the argument parser reading the text `null` as an absent value, which means they cannot match the literal string `"null"`; the dedicated operators have no such ambiguity.
+
+An empty argument list follows set semantics: `id=in=()` matches no row, because nothing is a member of the empty set, while `id=out=()` matches every row, because the empty set excludes nothing.
 
 ## Examples of RSQL
 
@@ -198,22 +206,46 @@ Now some real examples of RSQL queries.
     - /courses?query=department.name==*engineering - is guaranteed by the department that name ends to "engineering"
     - /courses?query=name==*services*&orderBy=name&maxResults=50 - name contains "services", order by name and limit output to maximum 50 results
 
+## Requirements
+
+Java 11 or newer, and a Jakarta Persistence 3.1 provider. The library depends only on `jakarta.persistence-api` and expects the application to supply the provider itself; the test suite runs against EclipseLink. Releases before 3.0.0 target the older `javax.persistence` namespace.
+
 ## Maven
+
+[![latest release](https://img.shields.io/maven-central/v/com.srnjak/rsql-jpa.svg?label=latest%20release)](https://central.sonatype.com/artifact/com.srnjak/rsql-jpa)
 
 ```xml
 <dependency>
     <groupId>com.srnjak</groupId>
     <artifactId>rsql-jpa</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
 </dependency>
 ```
 
+### Migrating from 3.x
+
+As of 4.0.0 the classes live under `com.srnjak.rsql`, the namespace this fork controls, instead of the upstream `com.github.tennaito.rsql`. Nothing else about the API changed, so the migration is a find and replace across your imports:
+
+```bash
+grep -rl 'com.github.tennaito.rsql' src | xargs sed -i 's/com\.github\.tennaito\.rsql/com.srnjak.rsql/g'
+```
+
+The rename exists because both this artifact and the upstream `com.github.tennaito:rsql-jpa` used to ship the same fully qualified class names. Since the two have diverged in behaviour, having both on one classpath meant the JVM picked an implementation by classpath order. Under distinct package names they coexist without ambiguity.
+
 ## License
 
-This project is licensed under [MIT license](http://opensource.org/licenses/MIT).
+This project is licensed under the [MIT license](LICENSE).
 
 ## Change log
 
+- (4.0.0) Moved the classes from com.github.tennaito.rsql to com.srnjak.rsql;
+          Added support for the `=null=` and `=notnull=` operators;
+          An empty `=out=()` now matches every row instead of none;
+          Switched to the maintained io.github.nstdio:rsql-parser.
+- (3.0.1) Moved the build and publishing to GitHub Actions and the Central Portal;
+          Updated test dependencies and build plugins.
+- (3.0.0) Migrated from the javax to the jakarta namespace;
+          Released under the com.srnjak coordinates.
 - (2.0.2) Minor changes;
 - (2.0.1) Added Embeddable property Path;
 		  Resolved thread safed of Data formatting;

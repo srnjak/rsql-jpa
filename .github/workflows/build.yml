@@ -93,6 +93,20 @@ jobs:
       - name: Prepare Release Version
         run: |
           mvn -B versions:set -s mvn-settings.xml -DremoveSnapshot=true
+          VERSION=$(mvn -B -q -s mvn-settings.xml \
+            org.apache.maven.plugins:maven-help-plugin:3.5.2:evaluate \
+            -Dexpression=project.version -DforceStdout)
+          echo "Releasing $VERSION"
+          # Keep the README's dependency snippet on the version being released,
+          # so that it never has to be maintained by hand. The version element is
+          # located by the artifactId line above it rather than by a marker
+          # comment, so the snippet itself stays clean and copy-pasteable.
+          sed -i "/<artifactId>rsql-jpa<\/artifactId>/{n;s|<version>.*</version>|<version>${VERSION}</version>|}" README.md
+          # Fail the release rather than publish a README that quietly drifted.
+          if ! grep -A1 '<artifactId>rsql-jpa</artifactId>' README.md | grep -q "<version>${VERSION}</version>"; then
+            echo "::error::The README dependency snippet was not updated to ${VERSION}; its structure must have changed, so fix the sed above."
+            exit 1
+          fi
           mvn -B scm:checkin -s mvn-settings.xml -Dmessage="[release] Release version prepared."
   
       - name: Publish to Maven Central
@@ -101,6 +115,8 @@ jobs:
   
       - name: Prepare Next Snapshot Version
         run: |
+          # The README deliberately keeps the released version here, not the
+          # next snapshot, so only the pom moves on.
           mvn versions:set -s mvn-settings.xml -DnextSnapshot=true
           mvn -B scm:checkin -s mvn-settings.xml -Dmessage="[release] New snapshot version prepared."
 
