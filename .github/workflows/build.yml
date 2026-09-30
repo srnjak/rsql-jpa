@@ -93,7 +93,9 @@ jobs:
       - name: Prepare Release Version
         run: |
           mvn -B versions:set -s mvn-settings.xml -DremoveSnapshot=true
-          VERSION=$(mvn -B -q -s mvn-settings.xml help:evaluate -Dexpression=project.version -DforceStdout)
+          VERSION=$(mvn -B -q -s mvn-settings.xml \
+            org.apache.maven.plugins:maven-help-plugin:3.5.2:evaluate \
+            -Dexpression=project.version -DforceStdout)
           echo "Releasing $VERSION"
           # Keep the README's dependency snippet on the version being released,
           # so that it never has to be maintained by hand. The version element is
