@@ -218,7 +218,7 @@ Java 11 or newer, and a Jakarta Persistence 3.1 provider. The library depends on
 <dependency>
     <groupId>com.srnjak</groupId>
     <artifactId>rsql-jpa</artifactId>
-    <version><!-- see the badge above --></version>
+    <version>3.0.1</version>
 </dependency>
 ```
 
