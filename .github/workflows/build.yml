@@ -97,6 +97,7 @@ jobs:
             org.apache.maven.plugins:maven-help-plugin:3.5.2:evaluate \
             -Dexpression=project.version -DforceStdout)
           echo "Releasing $VERSION"
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
           # Keep the README's dependency snippet on the version being released,
           # so that it never has to be maintained by hand. The version element is
           # located by the artifactId line above it rather than by a marker
@@ -112,6 +113,45 @@ jobs:
       - name: Publish to Maven Central
         run: |
           mvn -B clean scm:tag deploy -s mvn-settings.xml -P central -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
+  
+      # scm:tag pushes a tag, which on its own shows up nowhere on the
+      # repository page. Turn it into a release, with the jars attached as
+      # the first release carried them.
+      - name: Create GitHub release
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const tag = `v${process.env.RELEASE_VERSION}`;
+
+            let release;
+            try {
+              release = await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tag,
+                name: tag,
+                generate_release_notes: true,
+              });
+            } catch (error) {
+              if (error.status === 422) {
+                core.warning(`A release for ${tag} already exists, leaving it alone.`);
+                return;
+              }
+              throw error;
+            }
+
+            const jars = fs.readdirSync('target').filter(f => f.endsWith('.jar'));
+            for (const jar of jars) {
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
+                name: jar,
+                data: fs.readFileSync(`target/${jar}`),
+              });
+            }
+            core.info(`Published ${tag} with ${jars.length} assets.`);
   
       - name: Prepare Next Snapshot Version
         run: |
